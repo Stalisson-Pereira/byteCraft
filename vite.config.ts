@@ -5,7 +5,10 @@ import { traeBadgePlugin } from 'vite-plugin-trae-solo-badge';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'gh-pages' ? '/byteCraft/' : '/',
+  base:
+    mode === 'gh-pages'
+      ? `/${process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'byteCraft'}/`
+      : '/',
   build: {
     sourcemap: 'hidden',
   },

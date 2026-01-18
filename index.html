@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ByteCraft</title>
     <script type="module">
@@ -18,7 +18,28 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div
+        id="js-fallback"
+        style="
+          padding: 24px;
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+          color: #0f172a;
+        "
+      >
+        Carregando…
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.setTimeout(function () {
+        var el = document.getElementById('js-fallback')
+        if (!el) return
+        el.innerHTML =
+          '<strong>Não foi possível carregar o app.</strong><br />' +
+          'Se você estiver no GitHub Pages, confira em <em>Settings → Pages</em> se a fonte está em <em>GitHub Actions</em> (e não “Deploy from a branch”).<br />' +
+          'Também vale abrir o Console (F12) e verificar se os arquivos em <code>/byteCraft/assets/…</code> estão dando 404.'
+      }, 2000)
+    </script>
   </body>
 </html>

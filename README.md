@@ -81,4 +81,19 @@ A URL fica neste formato:
 
 - `https://stalisson-pereira.github.io/byteCraft/`
 
-Se aparecer tela branca, normalmente é porque o projeto foi buildado com `base` errado (assets tentando carregar de `/assets/...` ao invés de `/byteCraft/assets/...`).
+Se aparecer tela branca, normalmente é porque o projeto foi buildado com `base` errado (assets tentando carregar de `/assets/...` ao invés de `/<nome-do-repo>/assets/...`). Neste projeto, o `base` para GitHub Pages é calculado automaticamente a partir do nome do repositório no GitHub Actions.
+
+Checklist rápido (tela branca):
+
+1) Confirme que o Pages está usando GitHub Actions (não “Deploy from a branch”)
+
+- `Settings → Pages → Build and deployment → Source: GitHub Actions`
+
+2) Confirme que o workflow de deploy rodou
+
+- `Actions → Deploy to GitHub Pages` (último run precisa estar verde)
+
+3) Veja o HTML gerado (View Source) e procure por:
+
+- Se aparecer `src="/src/main.tsx"`, você está servindo o código fonte (não o build). Ajuste o Pages para GitHub Actions.
+- Se aparecer `src="/<nome-do-repo>/assets/..."` e mesmo assim estiver branco, abra o Console (F12) e procure por 404 em `/assets/...` ou erros de “Failed to load module script”.

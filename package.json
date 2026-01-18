@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:gh-pages": "tsc -b && vite build --mode gh-pages",
+    "build:gh-pages": "tsc -b && vite build --mode gh-pages && node scripts/copy-spa-fallback.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "check": "tsc -b --noEmit",
