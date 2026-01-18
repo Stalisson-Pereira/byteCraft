@@ -6,7 +6,7 @@ import NotFound from "@/pages/NotFound";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <ScrollManager />
       <Routes>
         <Route path="/" element={<Home />} />

@@ -68,3 +68,17 @@ npm run dev -- --port 5174
 ## Observações de Git
 
 Arquivos/pastas locais como `.trae/` e `.vercel/` estão no `.gitignore`.
+
+## Deploy no GitHub Pages
+
+Este repo já inclui um workflow que faz build e publica no GitHub Pages automaticamente.
+
+1) No GitHub, vá em `Settings → Pages`
+2) Em `Build and deployment`, selecione `Source: GitHub Actions`
+3) Faça um push na branch `main`
+
+A URL fica neste formato:
+
+- `https://stalisson-pereira.github.io/byteCraft/`
+
+Se aparecer tela branca, normalmente é porque o projeto foi buildado com `base` errado (assets tentando carregar de `/assets/...` ao invés de `/byteCraft/assets/...`).

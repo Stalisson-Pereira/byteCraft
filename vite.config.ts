@@ -4,16 +4,15 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { traeBadgePlugin } from 'vite-plugin-trae-solo-badge';
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === 'gh-pages' ? '/byteCraft/' : '/',
   build: {
     sourcemap: 'hidden',
   },
   plugins: [
     react({
       babel: {
-        plugins: [
-          'react-dev-locator',
-        ],
+        plugins: ['react-dev-locator'],
       },
     }),
     traeBadgePlugin({
@@ -23,8 +22,8 @@ export default defineConfig({
       clickable: true,
       clickUrl: 'https://www.trae.ai/solo?showJoin=1',
       autoTheme: true,
-      autoThemeTarget: '#root'
-    }), 
-    tsconfigPaths()
+      autoThemeTarget: '#root',
+    }),
+    tsconfigPaths(),
   ],
-})
+}))
