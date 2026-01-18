@@ -1,0 +1,70 @@
+# ByteCraft (React + TypeScript + Vite)
+
+Landing page com tema claro/escuro, rotas (`/`, `/contato`) e UI moderna com Tailwind.
+
+## Requisitos
+
+- Node.js 20 LTS (recomendado) ou 18+
+- npm (já vem com Node)
+
+Para checar:
+
+```bash
+node -v
+npm -v
+```
+
+## Passo a passo (VSCode, Cursor, WebStorm, etc.)
+
+1) Abra o projeto na sua IDE
+
+- VSCode/Cursor: `File → Open Folder...` e selecione a pasta do projeto.
+
+2) Instale as dependências
+
+```bash
+npm install
+```
+
+3) Rode o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
+4) Abra no navegador
+
+- Normalmente: `http://localhost:5173/`
+- O botão de tema (header) alterna entre claro/escuro.
+
+## Scripts
+
+- Desenvolvimento: `npm run dev`
+- Build de produção: `npm run build`
+- Preview do build (após o build): `npm run preview`
+- Testes: `npm test`
+- Lint: `npm run lint`
+- Checagem TS (sem gerar build): `npm run check`
+
+## Estrutura (visão rápida)
+
+- `src/pages/Home.tsx`: página principal
+- `src/pages/Contact.tsx`: página de contato (formulário via `mailto:`)
+- `src/pages/home/*`: seções da Home
+- `src/components/*`: componentes compartilhados
+
+## Solução de problemas comuns
+
+- Porta `5173` ocupada: rode em outra porta
+
+```bash
+npm run dev -- --port 5174
+```
+
+- Erro de versão do Node/Vite: atualize para Node 20 LTS.
+- Problemas com caminhos longos no Windows/OneDrive: mova o projeto para um caminho mais curto (ex.: `C:\\dev\\bytecraft`).
+- Após trocar de branch ou apagar `node_modules`: rode `npm install` novamente.
+
+## Observações de Git
+
+Arquivos/pastas locais como `.trae/` e `.vercel/` estão no `.gitignore`.
