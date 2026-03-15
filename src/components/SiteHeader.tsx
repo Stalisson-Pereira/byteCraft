@@ -50,29 +50,28 @@ function loadStoredProfile(): GoogleProfile | null {
   }
 }
 
-function loadGoogleIdentityScript(): Promise<void> {
-  const g = (window as unknown as { google?: any }).google;
-  if (g?.accounts?.id) return Promise.resolve();
+function getGoogleAccountsId() {
+  return (window as unknown as { google?: any }).google?.accounts?.id;
+}
+
+async function loadGoogleIdentityServices(): Promise<void> {
+  if (getGoogleAccountsId()) return;
 
   const existing = document.querySelector('script[data-google-identity="true"]') as HTMLScriptElement | null;
-  if (existing) {
-    return new Promise((resolve) => {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      // If it was already loaded before we attached, poll one tick.
-      setTimeout(() => resolve(), 0);
-    });
-  }
-
-  return new Promise((resolve, reject) => {
+  if (!existing) {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
     script.dataset.googleIdentity = "true";
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Google Identity Services script."));
     document.head.appendChild(script);
-  });
+  }
+
+  const start = Date.now();
+  while (!getGoogleAccountsId()) {
+    if (Date.now() - start > 8000) throw new Error("Google Identity Services not available.");
+    await new Promise((r) => setTimeout(r, 50));
+  }
 }
 
 export default function SiteHeader() {
@@ -90,16 +89,14 @@ export default function SiteHeader() {
 
   useEffect(() => {
     if (!clientId) return;
-
     let cancelled = false;
-    loadGoogleIdentityScript()
+    loadGoogleIdentityServices()
       .then(() => {
         if (!cancelled) setGoogleReady(true);
       })
       .catch(() => {
         if (!cancelled) setGoogleReady(false);
       });
-
     return () => {
       cancelled = true;
     };
@@ -107,11 +104,11 @@ export default function SiteHeader() {
 
   useEffect(() => {
     if (!clientId || !googleReady) return;
-    const g = (window as unknown as { google?: any }).google;
-    if (!g?.accounts?.id) return;
+    const accountsId = getGoogleAccountsId();
+    if (!accountsId) return;
 
     if (!initializedRef.current) {
-      g.accounts.id.initialize({
+      accountsId.initialize({
         client_id: clientId,
         callback: (resp: { credential?: string }) => {
           const credential = resp.credential;
@@ -125,10 +122,10 @@ export default function SiteHeader() {
       initializedRef.current = true;
     }
 
-    // Render a real "Sign in with Google" button (more reliable than One Tap prompt).
+    // Render the official Google button (most reliable).
     if (!profile && loginButtonRef.current) {
       loginButtonRef.current.innerHTML = "";
-      g.accounts.id.renderButton(loginButtonRef.current, {
+      accountsId.renderButton(loginButtonRef.current, {
         theme: isDark ? "filled_black" : "outline",
         size: "medium",
         type: "standard",
@@ -141,8 +138,8 @@ export default function SiteHeader() {
 
   function handleLogout() {
     localStorage.removeItem("bytecraft_google_profile");
-    const g = (window as unknown as { google?: any }).google;
-    g?.accounts?.id?.disableAutoSelect?.();
+    const accountsId = getGoogleAccountsId();
+    accountsId?.disableAutoSelect?.();
     setProfile(null);
   }
 
@@ -188,7 +185,7 @@ export default function SiteHeader() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-900/10 bg-slate-900/5 text-slate-900 transition hover:bg-slate-900/10 dark:border-slate-200/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-900/10 bg-slate-900/5 text-slate-900 transition hover:bg-slate-900/10 dark:border-slate-200/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10"
             aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -199,7 +196,7 @@ export default function SiteHeader() {
               Sair
             </Button>
           ) : clientId && googleReady ? (
-            <div ref={loginButtonRef} className="h-10" />
+            <div ref={loginButtonRef} className="inline-flex min-h-10 min-w-[180px] items-center overflow-hidden" />
           ) : (
             <Button variant="secondary" disabled title="Defina VITE_GOOGLE_CLIENT_ID para habilitar o login">
               Login
@@ -214,3 +211,4 @@ export default function SiteHeader() {
     </header>
   );
 }
+
