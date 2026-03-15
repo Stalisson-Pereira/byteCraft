@@ -8,7 +8,6 @@ import useAuthInit from "@/hooks/useAuthInit";
 
 export default function App() {
   useAuthInit();
-
   return (
     <Router basename={import.meta.env.BASE_URL}>
       <ScrollManager />

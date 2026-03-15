@@ -69,6 +69,7 @@ export default function SiteHeader() {
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+
           {user ? (
             <Button variant="secondary" onClick={logout}>
               Sair
@@ -78,6 +79,7 @@ export default function SiteHeader() {
               <Button variant="secondary">Login</Button>
             </Link>
           )}
+
           <Link to="/contato">
             <Button variant="primary">Contato</Button>
           </Link>
