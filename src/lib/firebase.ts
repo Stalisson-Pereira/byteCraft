@@ -1,23 +1,20 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-function requiredEnv(name: string): string {
-  const value = import.meta.env[name];
+function required(value: unknown, name: string): string {
   if (!value || typeof value !== "string") {
-    throw new Error(
-      `Missing environment variable ${name}. Copy .env.example to .env.local and fill it.`,
-    );
+    throw new Error(`Missing environment variable ${name}.`);
   }
   return value;
 }
 
 const firebaseConfig = {
-  apiKey: requiredEnv("VITE_FIREBASE_API_KEY"),
-  authDomain: requiredEnv("VITE_FIREBASE_AUTH_DOMAIN"),
-  projectId: requiredEnv("VITE_FIREBASE_PROJECT_ID"),
-  appId: requiredEnv("VITE_FIREBASE_APP_ID"),
+  // Use direct access so Vite can inline VITE_* at build time (GitHub Pages).
+  apiKey: required(import.meta.env.VITE_FIREBASE_API_KEY, "VITE_FIREBASE_API_KEY"),
+  authDomain: required(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN, "VITE_FIREBASE_AUTH_DOMAIN"),
+  projectId: required(import.meta.env.VITE_FIREBASE_PROJECT_ID, "VITE_FIREBASE_PROJECT_ID"),
+  appId: required(import.meta.env.VITE_FIREBASE_APP_ID, "VITE_FIREBASE_APP_ID"),
 };
 
 export const firebaseApp = getApps().length ? getApps()[0]! : initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
-
