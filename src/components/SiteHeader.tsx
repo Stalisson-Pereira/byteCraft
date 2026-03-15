@@ -195,12 +195,16 @@ export default function SiteHeader() {
             <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
               Sair
             </Button>
-          ) : clientId && googleReady ? (
-            <div ref={loginButtonRef} className="inline-flex min-h-10 min-w-[180px] items-center overflow-hidden" />
-          ) : (
+          ) : !clientId ? (
             <Button variant="secondary" disabled title="Defina VITE_GOOGLE_CLIENT_ID para habilitar o login">
               Login
             </Button>
+          ) : !googleReady ? (
+            <Button variant="secondary" disabled title="Carregando Google Identity Services...">
+              Login
+            </Button>
+          ) : (
+            <div ref={loginButtonRef} className="inline-flex min-h-10 min-w-[180px] items-center" />
           )}
 
           <Link to="/contato">
@@ -211,4 +215,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-

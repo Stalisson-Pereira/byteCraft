@@ -33,6 +33,12 @@ jobs:
       - name: Install
         run: npm install --no-audit --no-fund
 
+      - name: Verify Google Client ID
+        run: |
+          node -e "if(!process.env.VITE_GOOGLE_CLIENT_ID||String(process.env.VITE_GOOGLE_CLIENT_ID).trim()===''){console.error('Missing VITE_GOOGLE_CLIENT_ID. Set it in Settings -> Secrets and variables -> Actions -> Variables.');process.exit(1)};console.log('VITE_GOOGLE_CLIENT_ID OK')"
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+
       - name: Build
         run: npm run build:gh-pages
         env:
