@@ -1,4 +1,4 @@
-import { ArrowRight, Globe2, LogIn, Shield, Sparkles } from "lucide-react";
+import { ArrowRight, Globe2, Shield, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import Button from "@/components/Button";
@@ -40,11 +40,6 @@ export default function HomeHero() {
                   Começar agora <ArrowRight className="h-4 w-4" />
                 </Button>
               </a>
-              <Link to="/login" className="w-full sm:w-auto">
-                <Button variant="secondary" className="w-full sm:w-auto">
-                  Login <LogIn className="h-4 w-4" />
-                </Button>
-              </Link>
               <Link to="/contato" className="w-full sm:w-auto">
                 <Button variant="secondary" className="w-full sm:w-auto">
                   Falar no contato
@@ -78,4 +73,3 @@ export default function HomeHero() {
     </section>
   );
 }
-

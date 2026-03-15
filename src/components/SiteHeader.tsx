@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Code2, Moon, Sun } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -12,12 +13,93 @@ const homeAnchors = [
   { label: "Prova social", href: "#prova-social" },
 ];
 
+type GoogleProfile = {
+  name?: string;
+  email?: string;
+  picture?: string;
+};
+
+function b64UrlDecode(input: string) {
+  const base64 = input.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "===".slice((base64.length + 3) % 4);
+  const json = atob(padded);
+  return decodeURIComponent(
+    json
+      .split("")
+      .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+      .join(""),
+  );
+}
+
+function parseJwtPayload(credential: string): GoogleProfile | null {
+  const parts = credential.split(".");
+  if (parts.length < 2) return null;
+  try {
+    return JSON.parse(b64UrlDecode(parts[1]!)) as GoogleProfile;
+  } catch {
+    return null;
+  }
+}
+
+function loadStoredProfile(): GoogleProfile | null {
+  try {
+    const raw = localStorage.getItem("bytecraft_google_profile");
+    return raw ? (JSON.parse(raw) as GoogleProfile) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function SiteHeader() {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
 
+  const clientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "", []);
+  const [profile, setProfile] = useState<GoogleProfile | null>(() => loadStoredProfile());
+
   const isHome = location.pathname === "/";
   const anchorBase = isHome ? "" : "/";
+
+  useEffect(() => {
+    if (!clientId) return;
+    if (document.querySelector('script[data-google-identity="true"]')) return;
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.dataset.googleIdentity = "true";
+    script.onload = () => {
+      const g = (window as unknown as { google?: any }).google;
+      if (!g?.accounts?.id) return;
+
+      g.accounts.id.initialize({
+        client_id: clientId,
+        callback: (resp: { credential?: string }) => {
+          const credential = resp.credential;
+          if (!credential) return;
+          const payload = parseJwtPayload(credential);
+          if (!payload) return;
+          localStorage.setItem("bytecraft_google_profile", JSON.stringify(payload));
+          setProfile(payload);
+        },
+      });
+    };
+    document.head.appendChild(script);
+  }, [clientId]);
+
+  function handleLogin() {
+    if (!clientId) return;
+    const g = (window as unknown as { google?: any }).google;
+    g?.accounts?.id?.prompt?.();
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("bytecraft_google_profile");
+    const g = (window as unknown as { google?: any }).google;
+    g?.accounts?.id?.disableAutoSelect?.();
+    setProfile(null);
+  }
 
   return (
     <header
@@ -67,6 +149,18 @@ export default function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
+          {clientId ? (
+            profile ? (
+              <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
+                Sair
+              </Button>
+            ) : (
+              <Button variant="secondary" onClick={handleLogin}>
+                Login
+              </Button>
+            )
+          ) : null}
+
           <Link to="/contato">
             <Button variant="primary">Contato</Button>
           </Link>
@@ -75,3 +169,4 @@ export default function SiteHeader() {
     </header>
   );
 }
+
