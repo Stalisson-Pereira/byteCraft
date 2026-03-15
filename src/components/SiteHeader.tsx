@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Code2, Moon, Sun } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -50,29 +50,67 @@ function loadStoredProfile(): GoogleProfile | null {
   }
 }
 
+function loadGoogleIdentityScript(): Promise<void> {
+  const g = (window as unknown as { google?: any }).google;
+  if (g?.accounts?.id) return Promise.resolve();
+
+  const existing = document.querySelector('script[data-google-identity="true"]') as HTMLScriptElement | null;
+  if (existing) {
+    return new Promise((resolve) => {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      // If it was already loaded before we attached, poll one tick.
+      setTimeout(() => resolve(), 0);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.dataset.googleIdentity = "true";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Identity Services script."));
+    document.head.appendChild(script);
+  });
+}
+
 export default function SiteHeader() {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
 
   const clientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "", []);
   const [profile, setProfile] = useState<GoogleProfile | null>(() => loadStoredProfile());
+  const [googleReady, setGoogleReady] = useState(false);
+  const initializedRef = useRef(false);
+  const loginButtonRef = useRef<HTMLDivElement | null>(null);
 
   const isHome = location.pathname === "/";
   const anchorBase = isHome ? "" : "/";
 
   useEffect(() => {
     if (!clientId) return;
-    if (document.querySelector('script[data-google-identity="true"]')) return;
 
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.dataset.googleIdentity = "true";
-    script.onload = () => {
-      const g = (window as unknown as { google?: any }).google;
-      if (!g?.accounts?.id) return;
+    let cancelled = false;
+    loadGoogleIdentityScript()
+      .then(() => {
+        if (!cancelled) setGoogleReady(true);
+      })
+      .catch(() => {
+        if (!cancelled) setGoogleReady(false);
+      });
 
+    return () => {
+      cancelled = true;
+    };
+  }, [clientId]);
+
+  useEffect(() => {
+    if (!clientId || !googleReady) return;
+    const g = (window as unknown as { google?: any }).google;
+    if (!g?.accounts?.id) return;
+
+    if (!initializedRef.current) {
       g.accounts.id.initialize({
         client_id: clientId,
         callback: (resp: { credential?: string }) => {
@@ -84,15 +122,22 @@ export default function SiteHeader() {
           setProfile(payload);
         },
       });
-    };
-    document.head.appendChild(script);
-  }, [clientId]);
+      initializedRef.current = true;
+    }
 
-  function handleLogin() {
-    if (!clientId) return;
-    const g = (window as unknown as { google?: any }).google;
-    g?.accounts?.id?.prompt?.();
-  }
+    // Render a real "Sign in with Google" button (more reliable than One Tap prompt).
+    if (!profile && loginButtonRef.current) {
+      loginButtonRef.current.innerHTML = "";
+      g.accounts.id.renderButton(loginButtonRef.current, {
+        theme: isDark ? "filled_black" : "outline",
+        size: "medium",
+        type: "standard",
+        shape: "pill",
+        text: "signin_with",
+        logo_alignment: "left",
+      });
+    }
+  }, [clientId, googleReady, isDark, profile]);
 
   function handleLogout() {
     localStorage.removeItem("bytecraft_google_profile");
@@ -149,15 +194,13 @@ export default function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {clientId ? (
+          {clientId && googleReady ? (
             profile ? (
               <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
                 Sair
               </Button>
             ) : (
-              <Button variant="secondary" onClick={handleLogin}>
-                Login
-              </Button>
+              <div ref={loginButtonRef} className="h-10" />
             )
           ) : null}
 
