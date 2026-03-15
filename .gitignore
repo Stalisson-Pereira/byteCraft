@@ -20,8 +20,6 @@ dist-ssr
 .vercel.json
 vercel.json
 
-.github/workflows/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
