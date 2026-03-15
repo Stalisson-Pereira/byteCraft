@@ -1,4 +1,4 @@
-import { ArrowRight, Globe2, Shield, Sparkles } from "lucide-react";
+import { ArrowRight, Globe2, LogIn, Shield, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import Button from "@/components/Button";
@@ -30,7 +30,8 @@ export default function HomeHero() {
             </h1>
 
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300/85">
-              A ByteCraft entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um toque de estética “dev”.
+              A ByteCraft entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um
+              toque de estética “dev”.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -39,6 +40,11 @@ export default function HomeHero() {
                   Começar agora <ArrowRight className="h-4 w-4" />
                 </Button>
               </a>
+              <Link to="/login" className="w-full sm:w-auto">
+                <Button variant="secondary" className="w-full sm:w-auto">
+                  Login <LogIn className="h-4 w-4" />
+                </Button>
+              </Link>
               <Link to="/contato" className="w-full sm:w-auto">
                 <Button variant="secondary" className="w-full sm:w-auto">
                   Falar no contato
@@ -54,7 +60,7 @@ export default function HomeHero() {
               ].map((k) => (
                 <div
                   key={k.label}
-                  className="rounded-2xl border border-slate-900/10 bg-white/70 p-4 backdrop-blur-sm shadow-sm shadow-slate-900/5 dark:border-slate-200/10 dark:bg-white/5 dark:shadow-none"
+                  className="rounded-2xl border border-slate-900/10 bg-white/70 p-4 shadow-sm shadow-slate-900/5 backdrop-blur-sm dark:border-slate-200/10 dark:bg-white/5 dark:shadow-none"
                 >
                   <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300/80">
                     <k.icon className="h-4 w-4 text-cyan-700 dark:text-cyan-200" />
@@ -72,3 +78,4 @@ export default function HomeHero() {
     </section>
   );
 }
+

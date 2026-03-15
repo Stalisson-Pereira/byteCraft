@@ -5,7 +5,6 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
-import { useAuthStore } from "@/lib/authStore";
 
 const homeAnchors = [
   { label: "Benefícios", href: "#beneficios" },
@@ -16,8 +15,6 @@ const homeAnchors = [
 export default function SiteHeader() {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
 
   const isHome = location.pathname === "/";
   const anchorBase = isHome ? "" : "/";
@@ -70,16 +67,6 @@ export default function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {user ? (
-            <Button variant="secondary" onClick={logout}>
-              Sair
-            </Button>
-          ) : (
-            <Link to="/login">
-              <Button variant="secondary">Login</Button>
-            </Link>
-          )}
-
           <Link to="/contato">
             <Button variant="primary">Contato</Button>
           </Link>
@@ -88,4 +75,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-

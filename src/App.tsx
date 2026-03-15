@@ -4,10 +4,8 @@ import Contact from "@/pages/Contact";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
-import useAuthInit from "@/hooks/useAuthInit";
 
 export default function App() {
-  useAuthInit();
   return (
     <Router basename={import.meta.env.BASE_URL}>
       <ScrollManager />
