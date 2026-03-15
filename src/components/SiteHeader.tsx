@@ -13,49 +13,34 @@ const homeAnchors = [
   { label: "Prova social", href: "#prova-social" },
 ];
 
-type GoogleProfile = {
-  name?: string;
-  email?: string;
-  picture?: string;
+type GoogleSession = {
+  accessToken: string;
+  profile: { name?: string; email?: string; picture?: string };
 };
 
-function b64UrlDecode(input: string) {
-  const base64 = input.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = base64 + "===".slice((base64.length + 3) % 4);
-  const json = atob(padded);
-  return decodeURIComponent(
-    json
-      .split("")
-      .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-      .join(""),
-  );
-}
-
-function parseJwtPayload(credential: string): GoogleProfile | null {
-  const parts = credential.split(".");
-  if (parts.length < 2) return null;
+function loadStoredSession(): GoogleSession | null {
   try {
-    return JSON.parse(b64UrlDecode(parts[1]!)) as GoogleProfile;
+    const raw = localStorage.getItem("bytecraft_google_session");
+    return raw ? (JSON.parse(raw) as GoogleSession) : null;
   } catch {
     return null;
   }
 }
 
-function loadStoredProfile(): GoogleProfile | null {
-  try {
-    const raw = localStorage.getItem("bytecraft_google_profile");
-    return raw ? (JSON.parse(raw) as GoogleProfile) : null;
-  } catch {
-    return null;
-  }
+function clearStoredSession() {
+  localStorage.removeItem("bytecraft_google_session");
 }
 
-function getGoogleAccountsId() {
-  return (window as unknown as { google?: any }).google?.accounts?.id;
+function storeSession(session: GoogleSession) {
+  localStorage.setItem("bytecraft_google_session", JSON.stringify(session));
+}
+
+function getGoogle() {
+  return (window as unknown as { google?: any }).google;
 }
 
 async function loadGoogleIdentityServices(): Promise<void> {
-  if (getGoogleAccountsId()) return;
+  if (getGoogle()?.accounts) return;
 
   const existing = document.querySelector('script[data-google-identity="true"]') as HTMLScriptElement | null;
   if (!existing) {
@@ -68,7 +53,7 @@ async function loadGoogleIdentityServices(): Promise<void> {
   }
 
   const start = Date.now();
-  while (!getGoogleAccountsId()) {
+  while (!getGoogle()?.accounts?.oauth2?.initTokenClient) {
     if (Date.now() - start > 8000) throw new Error("Google Identity Services not available.");
     await new Promise((r) => setTimeout(r, 50));
   }
@@ -79,10 +64,11 @@ export default function SiteHeader() {
   const { isDark, toggleTheme } = useTheme();
 
   const clientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "", []);
-  const [profile, setProfile] = useState<GoogleProfile | null>(() => loadStoredProfile());
   const [googleReady, setGoogleReady] = useState(false);
-  const initializedRef = useRef(false);
-  const loginButtonRef = useRef<HTMLDivElement | null>(null);
+  const [session, setSession] = useState<GoogleSession | null>(() => loadStoredSession());
+  const [loadingLogin, setLoadingLogin] = useState(false);
+
+  const tokenClientRef = useRef<any>(null);
 
   const isHome = location.pathname === "/";
   const anchorBase = isHome ? "" : "/";
@@ -104,43 +90,53 @@ export default function SiteHeader() {
 
   useEffect(() => {
     if (!clientId || !googleReady) return;
-    const accountsId = getGoogleAccountsId();
-    if (!accountsId) return;
+    if (tokenClientRef.current) return;
 
-    if (!initializedRef.current) {
-      accountsId.initialize({
-        client_id: clientId,
-        callback: (resp: { credential?: string }) => {
-          const credential = resp.credential;
-          if (!credential) return;
-          const payload = parseJwtPayload(credential);
-          if (!payload) return;
-          localStorage.setItem("bytecraft_google_profile", JSON.stringify(payload));
-          setProfile(payload);
-        },
-      });
-      initializedRef.current = true;
-    }
+    const google = getGoogle();
+    if (!google?.accounts?.oauth2?.initTokenClient) return;
 
-    // Render the official Google button (most reliable).
-    if (!profile && loginButtonRef.current) {
-      loginButtonRef.current.innerHTML = "";
-      accountsId.renderButton(loginButtonRef.current, {
-        theme: isDark ? "filled_black" : "outline",
-        size: "medium",
-        type: "standard",
-        shape: "pill",
-        text: "signin_with",
-        logo_alignment: "left",
-      });
-    }
-  }, [clientId, googleReady, isDark, profile]);
+    tokenClientRef.current = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: "openid email profile",
+      callback: async (tokenResponse: { access_token?: string; error?: string }) => {
+        try {
+          if (tokenResponse?.error) throw new Error(tokenResponse.error);
+          const accessToken = tokenResponse?.access_token;
+          if (!accessToken) throw new Error("missing_access_token");
+
+          const res = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          if (!res.ok) throw new Error("userinfo_failed");
+          const profile = (await res.json()) as { name?: string; email?: string; picture?: string };
+
+          const nextSession: GoogleSession = { accessToken, profile };
+          storeSession(nextSession);
+          setSession(nextSession);
+        } catch {
+          clearStoredSession();
+          setSession(null);
+        } finally {
+          setLoadingLogin(false);
+        }
+      },
+    });
+  }, [clientId, googleReady]);
+
+  function handleLogin() {
+    if (!clientId || !googleReady || !tokenClientRef.current) return;
+    setLoadingLogin(true);
+    tokenClientRef.current.requestAccessToken({ prompt: "consent" });
+  }
 
   function handleLogout() {
-    localStorage.removeItem("bytecraft_google_profile");
-    const accountsId = getGoogleAccountsId();
-    accountsId?.disableAutoSelect?.();
-    setProfile(null);
+    const accessToken = session?.accessToken;
+    clearStoredSession();
+    setSession(null);
+    if (!accessToken) return;
+
+    const google = getGoogle();
+    google?.accounts?.oauth2?.revoke?.(accessToken, () => {});
   }
 
   return (
@@ -191,20 +187,19 @@ export default function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {profile ? (
-            <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
+          {session ? (
+            <Button variant="secondary" onClick={handleLogout} title={session.profile.email ?? "Sair"}>
               Sair
             </Button>
-          ) : !clientId ? (
-            <Button variant="secondary" disabled title="Defina VITE_GOOGLE_CLIENT_ID para habilitar o login">
-              Login
-            </Button>
-          ) : !googleReady ? (
-            <Button variant="secondary" disabled title="Carregando Google Identity Services...">
-              Login
-            </Button>
           ) : (
-            <div ref={loginButtonRef} className="inline-flex min-h-10 min-w-[180px] items-center" />
+            <Button
+              variant="secondary"
+              onClick={handleLogin}
+              disabled={!clientId || !googleReady || loadingLogin}
+              title={!clientId ? "Defina VITE_GOOGLE_CLIENT_ID" : !googleReady ? "Carregando Google..." : "Entrar com Google"}
+            >
+              {loadingLogin ? "Abrindo..." : "Login"}
+            </Button>
           )}
 
           <Link to="/contato">
@@ -215,3 +210,4 @@ export default function SiteHeader() {
     </header>
   );
 }
+
