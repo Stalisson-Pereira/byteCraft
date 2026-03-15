@@ -3,7 +3,10 @@ import { getAuth } from "firebase/auth";
 
 function required(value: unknown, name: string): string {
   if (!value || typeof value !== "string") {
-    throw new Error(`Missing environment variable ${name}.`);
+    throw new Error(
+      `Missing environment variable ${name}. ` +
+        `For local dev, set it in .env.local. For GitHub Pages, set it as an Actions Secret and redeploy.`,
+    );
   }
   return value;
 }
