@@ -194,15 +194,17 @@ export default function SiteHeader() {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {clientId && googleReady ? (
-            profile ? (
-              <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
-                Sair
-              </Button>
-            ) : (
-              <div ref={loginButtonRef} className="h-10" />
-            )
-          ) : null}
+          {profile ? (
+            <Button variant="secondary" onClick={handleLogout} title={profile.email ?? "Sair"}>
+              Sair
+            </Button>
+          ) : clientId && googleReady ? (
+            <div ref={loginButtonRef} className="h-10" />
+          ) : (
+            <Button variant="secondary" disabled title="Defina VITE_GOOGLE_CLIENT_ID para habilitar o login">
+              Login
+            </Button>
+          )}
 
           <Link to="/contato">
             <Button variant="primary">Contato</Button>
@@ -212,4 +214,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-
