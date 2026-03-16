@@ -30,8 +30,8 @@ export default function HomeHero() {
             </h1>
 
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300/85">
-              A ByteCraft entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um
-              toque de estética “dev”.
+              A ByteCraft entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um toque
+              de estética “dev”.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -73,3 +73,4 @@ export default function HomeHero() {
     </section>
   );
 }
+

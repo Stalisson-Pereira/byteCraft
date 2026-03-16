@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ScrollManager from "@/components/ScrollManager";
 import Contact from "@/pages/Contact";
 import Home from "@/pages/Home";
+import OAuthCallback from "@/pages/OAuthCallback";
 import NotFound from "@/pages/NotFound";
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <ScrollManager />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/contato" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

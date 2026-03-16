@@ -32,4 +32,3 @@ describe("ByteCraft app", () => {
     expect(screen.getByRole("heading", { name: /página não encontrada/i })).toBeInTheDocument();
   });
 });
-
