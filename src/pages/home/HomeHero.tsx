@@ -30,7 +30,7 @@ export default function HomeHero() {
             </h1>
 
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300/85">
-              A ByteCraft entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um toque
+              A Zyntra entrega uma experiência moderna: seções bem estruturadas, prova social e CTA claro. Tudo com um toque
               de estética “dev”.
             </p>
 
