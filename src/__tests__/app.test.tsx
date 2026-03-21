@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 
 import App from "@/App";
 
-describe("ByteCraft app", () => {
+describe("RennovaTech app", () => {
   it("renderiza a Home com a marca", async () => {
     window.history.pushState({}, "", "/");
     render(<App />);
 
-    expect(screen.getAllByText("ByteCraft").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("RennovaTech").length).toBeGreaterThan(0);
     expect(document.getElementById("beneficios")).toBeTruthy();
     expect(document.getElementById("como-funciona")).toBeTruthy();
     expect(document.getElementById("prova-social")).toBeTruthy();
