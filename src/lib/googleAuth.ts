@@ -12,8 +12,8 @@ export type GoogleSession = {
   profile?: { name?: string; email?: string; picture?: string };
 };
 
-const PKCE_KEY = "bytecraft_google_pkce";
-const SESSION_KEY = "bytecraft_google_session";
+const PKCE_KEY = "rennovatech_google_pkce";
+const SESSION_KEY = "rennovatech_google_session";
 
 function baseUrlPath(): string {
   // BASE_URL comes with trailing slash in Vite builds.
