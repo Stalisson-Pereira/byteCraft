@@ -9,7 +9,7 @@ export default function SiteFooter() {
       <Container className="py-10">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md">
-            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">ByteCraft</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">RennovaTech</div>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300/80">
               Uma landing page moderna, pensada para devs: visual dark, acentos violet/cyan e CTA direto.
             </p>
