@@ -32,7 +32,7 @@ export default function SiteHeader() {
     function onMessage(e: MessageEvent) {
       if (e.origin !== window.location.origin) return;
       if (typeof e.data !== "object" || !e.data) return;
-      if ((e.data as { type?: unknown }).type === "bytecraft:google_login") refresh();
+      if ((e.data as { type?: unknown }).type === "rennovatech:google_login") refresh();
     }
 
     window.addEventListener("message", onMessage);
@@ -56,7 +56,7 @@ export default function SiteHeader() {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-cyan-400 shadow-sm shadow-violet-900/30">
             <Code2 className="h-5 w-5 text-white" />
           </span>
-          <span className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">ByteCraft</span>
+          <span className="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100">RennovaTech</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
