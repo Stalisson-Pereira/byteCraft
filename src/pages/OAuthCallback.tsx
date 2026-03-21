@@ -39,7 +39,7 @@ export default function OAuthCallback() {
         // Notifica a janela que abriu este popup (se existir)
         try {
           window.opener?.postMessage(
-            { type: "bytecraft:google_login" },
+            { type: "rennovatech:google_login" },
             window.location.origin
           );
         } catch {
