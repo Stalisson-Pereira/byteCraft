@@ -17,7 +17,7 @@ export default function HowItWorksSection() {
     },
     {
       title: "Você entra em contato",
-      description: "Página /contato com formulário simples (sem backend) e envio via mailto pronto para usar.",
+      description: "Página /contato com formulário simples (sem backend) e envio via e-mail pronto para usar.",
       icon: MessageSquare,
     },
   ];
