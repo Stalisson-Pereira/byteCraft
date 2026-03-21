@@ -40,8 +40,8 @@ export default function Contact() {
 
   const canSubmit = Object.keys(errors).length === 0;
   const mailtoHref = buildMailto({
-    to: "contato@bytecraft.dev",
-    subject: `Contato ByteCraft — ${name || ""}`.trim(),
+    to: "contato@rennovatech.dev",
+    subject: `Contato Rennovatech — ${name || ""}`.trim(),
     body: `Nome: ${name}\nE-mail: ${email}\n\nMensagem:\n${message}`,
   });
 
@@ -55,18 +55,18 @@ export default function Contact() {
             <div>
               <h1 className="mt-5 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Vamos conversar</h1>
               <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/85">
-                Use o formulário para abrir seu cliente de e-mail com a mensagem pronta. Se preferir, envie direto
+                Use o formulário para abrir seu cliente de mailto com a mensagem pronta. Se preferir, envie direto
                 para o e-mail abaixo.
               </p>
 
               <div className="mt-8 rounded-2xl border border-slate-900/10 bg-white p-6 shadow-sm shadow-slate-900/5 dark:border-slate-200/10 dark:bg-white/5 dark:shadow-none">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-300/70">Canal</div>
                 <a
-                  href="mailto:contato@bytecraft.dev"
+                  href="mailto:contato@rennovatech.dev"
                   className="mt-3 inline-flex items-center gap-2 text-sm text-cyan-700 transition hover:text-cyan-600 dark:text-cyan-200 dark:hover:text-cyan-100"
                 >
                   <Mail className="h-4 w-4" />
-                  contato@bytecraft.dev
+                  contato@rennovatech.dev
                 </a>
                 <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">Placeholder: resposta em até 2 dias úteis.</div>
               </div>
