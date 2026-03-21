@@ -34,24 +34,24 @@ export default function SiteFooter() {
           <div className="flex flex-col gap-2">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300/70">Contato</div>
             <a
-              href="mailto:contato@bytecraft.dev"
+              href="mailto:contato@rennovatech.dev"
               className="inline-flex items-center gap-2 text-sm text-slate-700 transition hover:text-slate-900 dark:text-slate-200/80 dark:hover:text-slate-100"
             >
               <Mail className="h-4 w-4" />
-              contato@bytecraft.dev
+              contato@rennovatech.dev
             </a>
             <a
               href="https://github.com"
               className="inline-flex items-center gap-2 text-sm text-slate-700 transition hover:text-slate-900 dark:text-slate-200/80 dark:hover:text-slate-100"
             >
               <Github className="h-4 w-4" />
-              github.com/bytecraft
+              instagram.com/RennovaTech
             </a>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-slate-900/10 pt-6 text-xs text-slate-500 dark:border-slate-200/10 dark:text-slate-400">
-          <div>© {new Date().getFullYear()} ByteCraft. Todos os direitos reservados.</div>
+          <div>© {new Date().getFullYear()} RennovaTech. Todos os direitos reservados.</div>
         </div>
       </Container>
     </footer>
