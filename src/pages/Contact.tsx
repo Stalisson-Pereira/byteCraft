@@ -41,7 +41,7 @@ export default function Contact() {
   const canSubmit = Object.keys(errors).length === 0;
   const mailtoHref = buildMailto({
     to: "contato@rennovatech.dev",
-    subject: `Contato Rennovatech — ${name || ""}`.trim(),
+    subject: `Contato RennovaTech — ${name || ""}`.trim(),
     body: `Nome: ${name}\nE-mail: ${email}\n\nMensagem:\n${message}`,
   });
 
