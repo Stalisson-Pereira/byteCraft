@@ -1,3 +1,4 @@
+// src/pages/OAuthCallback.tsx
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -6,38 +7,61 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { finishGoogleLoginFromCallbackUrl } from "@/lib/googleAuth";
 
+type Status = "working" | "ok" | "error";
+
 export default function OAuthCallback() {
-  const clientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "", []);
-  const baseUrl = useMemo(() => import.meta.env.BASE_URL ?? "/", []);
-  const [status, setStatus] = useState<"working" | "ok" | "error">("working");
+  const clientId = useMemo(
+    () => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "",
+    []
+  );
+  const baseUrl = useMemo(
+    () => import.meta.env.BASE_URL ?? "/",
+    []
+  );
+
+  const [status, setStatus] = useState<Status>("working");
 
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
       try {
         if (!clientId) throw new Error("missing_client_id");
-        await finishGoogleLoginFromCallbackUrl(window.location.href, clientId);
+
+        await finishGoogleLoginFromCallbackUrl(
+          window.location.href,
+          clientId
+        );
+
         if (cancelled) return;
         setStatus("ok");
 
-        // Notify opener to refresh session (best-effort).
+        // Notifica a janela que abriu este popup (se existir)
         try {
-          window.opener?.postMessage({ type: "bytecraft:google_login" }, window.location.origin);
+          window.opener?.postMessage(
+            { type: "bytecraft:google_login" },
+            window.location.origin
+          );
         } catch {
-          // ignore
+          // ignora
         }
 
-        // Best-effort close (works if this tab was opened by the app).
+        // Tenta fechar a aba
         window.close();
 
-        // Fallback: redirect back to home after a short delay.
+        // Fallback: redireciona para home após curto delay
         setTimeout(() => {
-          window.location.assign(new URL(baseUrl, window.location.origin).toString());
+          if (!cancelled) {
+            const redirectUrl = new URL(baseUrl, window.location.origin);
+            window.location.assign(redirectUrl.toString());
+          }
         }, 600);
-      } catch {
+      } catch (error) {
+        console.error("Erro no callback do Google OAuth:", error);
         if (!cancelled) setStatus("error");
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -50,30 +74,42 @@ export default function OAuthCallback() {
       <main className="py-20">
         <Container>
           <div className="mx-auto max-w-xl rounded-3xl border border-slate-900/10 bg-white p-10 text-center shadow-sm shadow-slate-900/10 dark:border-slate-200/10 dark:bg-white/5 dark:shadow-none">
-            {status === "working" ? (
+            {status === "working" && (
               <>
                 <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                   Concluindo login...
                 </h1>
-                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+                
                   Você pode fechar esta aba quando terminar.
-                </p>
+                
+
+
               </>
-            ) : status === "ok" ? (
+            )}
+
+            {status === "ok" && (
               <>
-                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Login concluído</h1>
-                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                  Login concluído
+                </h1>
+                
                   Se esta aba não fechar automaticamente, você será redirecionado para a página principal.
-                </p>
+                
+
+
               </>
-            ) : (
+            )}
+
+            {status === "error" && (
               <>
                 <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                   Não foi possível concluir o login
                 </h1>
-                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+                
                   Tente novamente e confirme o Client ID e o Redirect URI no Google Cloud Console.
-                </p>
+                
+
+
               </>
             )}
 
@@ -90,7 +126,3 @@ export default function OAuthCallback() {
       </main>
 
       <SiteFooter />
-    </div>
-  );
-}
-
