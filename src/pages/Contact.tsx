@@ -40,8 +40,8 @@ export default function Contact() {
 
   const canSubmit = Object.keys(errors).length === 0;
   const mailtoHref = buildMailto({
-    to: "contato@bytecraft.dev",
-    subject: `Onboarding ByteCraft - ${name || ""}`.trim(),
+    to: "contato@rennovatech.dev",
+    subject: `Onboarding RennovaTech - ${name || ""}`.trim(),
     body: `Nome: ${name}\nE-mail: ${email}\n\nContexto:\n${message}`,
   });
 
@@ -58,7 +58,7 @@ export default function Contact() {
             </div>
 
             <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              Coloque seu time para operar com a ByteCraft.
+              Coloque seu time para operar com a RennovaTech.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300/85">
               Use este canal para onboarding, dúvidas técnicas, setup do OAuth, automações, deploys ou desenho do workspace.
@@ -89,11 +89,11 @@ export default function Contact() {
                 Canal direto
               </div>
               <a
-                href="mailto:contato@bytecraft.dev"
+                href="mailto:contato@rennovatech.dev"
                 className="mt-4 inline-flex items-center gap-2 text-lg font-semibold text-cyan-300 transition hover:text-cyan-200"
               >
                 <Mail className="h-5 w-5" />
-                contato@bytecraft.dev
+                contato@rennovatech.dev
               </a>
               <p className="mt-3 text-sm leading-6 text-slate-300">
                 Para onboarding e suporte inicial, a resposta padrão estimada é de até 2 horas úteis em temas críticos.

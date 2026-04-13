@@ -15,7 +15,7 @@ export default function FinalCtaSection() {
             </div>
             <div className="relative mx-auto max-w-2xl">
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-300/80">Pronto?</div>
-              <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Fale com a ByteCraft</h3>
+              <h3 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Fale com a RennovaTech</h3>
               <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-200/80">
                 Manda uma mensagem rápida e eu te retorno com os próximos passos. Sem cadastro, sem fricção.
               </p>

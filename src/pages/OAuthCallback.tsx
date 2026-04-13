@@ -6,38 +6,45 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { finishGoogleLoginFromCallbackUrl } from "@/lib/googleAuth";
 
+type Status = "working" | "ok" | "error";
+
 export default function OAuthCallback() {
   const clientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "", []);
   const baseUrl = useMemo(() => import.meta.env.BASE_URL ?? "/", []);
-  const [status, setStatus] = useState<"working" | "ok" | "error">("working");
+  const [status, setStatus] = useState<Status>("working");
 
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
       try {
         if (!clientId) throw new Error("missing_client_id");
+
         await finishGoogleLoginFromCallbackUrl(window.location.href, clientId);
+
         if (cancelled) return;
         setStatus("ok");
 
-        // Notify opener to refresh session (best-effort).
         try {
-          window.opener?.postMessage({ type: "bytecraft:google_login" }, window.location.origin);
+          window.opener?.postMessage({ type: "rennovatech:google_login" }, window.location.origin);
         } catch {
           // ignore
         }
 
-        // Best-effort close (works if this tab was opened by the app).
         window.close();
 
-        // Fallback: redirect back to home after a short delay.
         setTimeout(() => {
-          window.location.assign(new URL(baseUrl, window.location.origin).toString());
+          if (!cancelled) {
+            const redirectUrl = new URL(baseUrl, window.location.origin);
+            window.location.assign(redirectUrl.toString());
+          }
         }, 600);
-      } catch {
+      } catch (error) {
+        console.error("Erro no callback do Google OAuth:", error);
         if (!cancelled) setStatus("error");
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -61,7 +68,9 @@ export default function OAuthCallback() {
               </>
             ) : status === "ok" ? (
               <>
-                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Login concluído</h1>
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+                  Login concluído
+                </h1>
                 <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/80">
                   Se esta aba não fechar automaticamente, você será redirecionado para a página principal.
                 </p>

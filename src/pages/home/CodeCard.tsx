@@ -12,7 +12,7 @@ export default function CodeCard() {
         <div className="relative">
           <div className="flex items-center justify-between">
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-600 dark:text-slate-300/70">
-              ByteCraft UI
+              RTech UI
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-rose-400/80" />
