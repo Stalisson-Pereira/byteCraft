@@ -1,4 +1,4 @@
-import { Mail, Send } from "lucide-react";
+import { CheckCircle2, LifeBuoy, Mail, Send, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import Button from "@/components/Button";
@@ -30,55 +30,86 @@ export default function Contact() {
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
 
   const errors = useMemo(() => {
-    const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Informe seu nome.";
-    if (!email.trim()) e.email = "Informe seu e-mail.";
-    else if (!isValidEmail(email)) e.email = "E-mail inválido.";
-    if (!message.trim()) e.message = "Escreva uma mensagem.";
-    return e;
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "Informe seu nome.";
+    if (!email.trim()) next.email = "Informe seu e-mail.";
+    else if (!isValidEmail(email)) next.email = "E-mail inválido.";
+    if (!message.trim()) next.message = "Escreva um contexto para o time.";
+    return next;
   }, [name, email, message]);
 
   const canSubmit = Object.keys(errors).length === 0;
   const mailtoHref = buildMailto({
     to: "contato@bytecraft.dev",
-    subject: `Contato ByteCraft — ${name || ""}`.trim(),
-    body: `Nome: ${name}\nE-mail: ${email}\n\nMensagem:\n${message}`,
+    subject: `Onboarding ByteCraft - ${name || ""}`.trim(),
+    body: `Nome: ${name}\nE-mail: ${email}\n\nContexto:\n${message}`,
   });
 
   return (
-    <div className="min-h-dvh bg-slate-50 text-slate-900 dark:bg-[#0B1020] dark:text-slate-100">
+    <div className="min-h-dvh bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.08),transparent_30%),linear-gradient(180deg,#f5f7fb_0%,#eef2ff_100%)] text-slate-900 dark:bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.10),transparent_18%),linear-gradient(180deg,#050816_0%,#0b1020_100%)] dark:text-slate-100">
       <SiteHeader />
 
-      <main className="py-14">
-        <Container>
-          <div className="grid gap-8 md:grid-cols-2">
-            <div>
-              <h1 className="mt-5 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Vamos conversar</h1>
-              <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300/85">
-                Use o formulário para abrir seu cliente de e-mail com a mensagem pronta. Se preferir, envie direto
-                para o e-mail abaixo.
-              </p>
-
-              <div className="mt-8 rounded-2xl border border-slate-900/10 bg-white p-6 shadow-sm shadow-slate-900/5 dark:border-slate-200/10 dark:bg-white/5 dark:shadow-none">
-                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-300/70">Canal</div>
-                <a
-                  href="mailto:contato@bytecraft.dev"
-                  className="mt-3 inline-flex items-center gap-2 text-sm text-cyan-700 transition hover:text-cyan-600 dark:text-cyan-200 dark:hover:text-cyan-100"
-                >
-                  <Mail className="h-4 w-4" />
-                  contato@bytecraft.dev
-                </a>
-                <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">Placeholder: resposta em até 2 dias úteis.</div>
-              </div>
+      <main className="mx-auto max-w-[1320px] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[1fr_560px]">
+          <section className="rounded-[32px] border border-slate-900/10 bg-white/85 p-8 shadow-[0_20px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:shadow-[0_24px_80px_-36px_rgba(0,0,0,0.75)]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-900/10 bg-slate-900/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+              <Sparkles className="h-3.5 w-3.5" />
+              Suporte e onboarding
             </div>
 
-            <div className="relative overflow-hidden rounded-3xl border border-slate-900/10 bg-white p-8 shadow-sm shadow-slate-900/10 dark:border-white/10 dark:bg-sky-950 dark:shadow-black/40">
-              <div className="pointer-events-none absolute inset-0 opacity-50 dark:opacity-70">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_10%,rgba(124,58,237,0.16),transparent_45%),radial-gradient(circle_at_85%_60%,rgba(34,211,238,0.12),transparent_45%)] dark:bg-[radial-gradient(circle_at_25%_10%,rgba(124,58,237,0.22),transparent_45%),radial-gradient(circle_at_85%_60%,rgba(34,211,238,0.18),transparent_45%)]" />
+            <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">
+              Coloque seu time para operar com a ByteCraft.
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300/85">
+              Use este canal para onboarding, dúvidas técnicas, setup do OAuth, automações, deploys ou desenho do workspace.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                "Configuração do workspace e papéis do time",
+                "Login Google, OAuth e domínios",
+                "Deploy no GitHub Pages ou Vercel",
+                "Automations para review, CI e incidentes",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-slate-900/10 bg-slate-50/90 p-4 text-sm text-slate-700 dark:border-white/10 dark:bg-black/20 dark:text-slate-200/85"
+                >
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                    <span>{item}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 rounded-3xl bg-slate-950 p-6 text-white dark:bg-[#070b16]">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <LifeBuoy className="h-4 w-4 text-cyan-300" />
+                Canal direto
               </div>
-              <div className="relative text-sm font-semibold text-slate-900 dark:text-slate-100">Formulário</div>
-              <p className="relative mt-2 text-sm leading-6 text-slate-600 dark:text-slate-200/80">
-                Preencha os campos e clique em “Enviar” para abrir seu e-mail.
+              <a
+                href="mailto:contato@bytecraft.dev"
+                className="mt-4 inline-flex items-center gap-2 text-lg font-semibold text-cyan-300 transition hover:text-cyan-200"
+              >
+                <Mail className="h-5 w-5" />
+                contato@bytecraft.dev
+              </a>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                Para onboarding e suporte inicial, a resposta padrão estimada é de até 2 horas úteis em temas críticos.
+              </p>
+            </div>
+          </section>
+
+          <section className="relative overflow-hidden rounded-[32px] border border-slate-900/10 bg-white/85 p-8 shadow-[0_20px_80px_-32px_rgba(15,23,42,0.35)] backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:shadow-[0_24px_80px_-36px_rgba(0,0,0,0.75)]">
+            <div className="pointer-events-none absolute inset-0 opacity-60">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(124,58,237,0.12),transparent_42%),radial-gradient(circle_at_85%_65%,rgba(34,211,238,0.10),transparent_45%)] dark:bg-[radial-gradient(circle_at_20%_15%,rgba(124,58,237,0.16),transparent_42%),radial-gradient(circle_at_85%_65%,rgba(34,211,238,0.12),transparent_45%)]" />
+            </div>
+
+            <div className="relative">
+              <div className="text-sm font-semibold text-slate-950 dark:text-white">Abrir contato por e-mail</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300/80">
+                Preencha o contexto e clique em enviar para abrir seu cliente de e-mail com a mensagem pronta.
               </p>
 
               <form
@@ -106,9 +137,7 @@ export default function Contact() {
                     placeholder="Seu nome"
                     autoComplete="name"
                   />
-                  {touched.name && errors.name ? (
-                    <div className="mt-2 text-xs text-rose-600 dark:text-rose-300">{errors.name}</div>
-                  ) : null}
+                  {touched.name && errors.name ? <div className="mt-2 text-xs text-rose-600 dark:text-rose-300">{errors.name}</div> : null}
                 </div>
 
                 <div>
@@ -124,12 +153,10 @@ export default function Contact() {
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                     className="mt-2 w-full rounded-xl border border-slate-900/10 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-700/40 focus:ring-2 focus:ring-cyan-700/15 dark:border-white/10 dark:bg-black/30 dark:text-slate-100 dark:placeholder:text-slate-400/70 dark:focus:border-cyan-200/40 dark:focus:ring-cyan-200/20"
-                    placeholder="voce@exemplo.com"
+                    placeholder="voce@empresa.com"
                     autoComplete="email"
                   />
-                  {touched.email && errors.email ? (
-                    <div className="mt-2 text-xs text-rose-600 dark:text-rose-300">{errors.email}</div>
-                  ) : null}
+                  {touched.email && errors.email ? <div className="mt-2 text-xs text-rose-600 dark:text-rose-300">{errors.email}</div> : null}
                 </div>
 
                 <div>
@@ -137,16 +164,16 @@ export default function Contact() {
                     htmlFor="contact-message"
                     className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300/70"
                   >
-                    Mensagem
+                    Contexto
                   </label>
                   <textarea
                     id="contact-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onBlur={() => setTouched((t) => ({ ...t, message: true }))}
-                    rows={5}
+                    rows={6}
                     className="mt-2 w-full resize-none rounded-xl border border-slate-900/10 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-700/40 focus:ring-2 focus:ring-cyan-700/15 dark:border-white/10 dark:bg-black/30 dark:text-slate-100 dark:placeholder:text-slate-400/70 dark:focus:border-cyan-200/40 dark:focus:ring-cyan-200/20"
-                    placeholder="Como eu posso te ajudar?"
+                    placeholder="Ex.: quero configurar login Google, automações por PR e dashboard para o time."
                   />
                   {touched.message && errors.message ? (
                     <div className="mt-2 text-xs text-rose-600 dark:text-rose-300">{errors.message}</div>
@@ -173,11 +200,12 @@ export default function Contact() {
                 </a>
               </form>
             </div>
-          </div>
-        </Container>
+          </section>
+        </div>
       </main>
 
       <SiteFooter />
     </div>
   );
 }
+
